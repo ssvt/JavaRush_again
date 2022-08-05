@@ -56,7 +56,7 @@ public class Solution {
 
         @Override
         public void run() {
-            while (!isInterrupted()){
+//            while (!isInterrupted()){
                 try(Scanner scanner = new Scanner(new FileReader(fileNmae))) {
                     while (scanner.hasNext()){
                         fileContent = fileContent + scanner.nextLine() + " ";
@@ -65,7 +65,7 @@ public class Solution {
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-            }
+//            }
         }
     }
 }

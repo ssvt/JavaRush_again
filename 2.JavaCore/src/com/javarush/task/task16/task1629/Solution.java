@@ -8,6 +8,10 @@ import java.io.InputStreamReader;
 Только по-очереди!
 */
 
+/**
+ * не проходит валидатор, виснет...  написал в техподдержку
+ */
+
 public class Solution {
     public static volatile BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -31,7 +35,7 @@ public class Solution {
         @Override
         public void run() {
 
-            while (!isInterrupted()){
+//            while (!isInterrupted()){
                 for (int i = 0; i < 3; i++) {
                     try {
 /*                        stringBuilder.append(reader.readLine());
@@ -41,8 +45,8 @@ public class Solution {
                     } catch (IOException e) {
 
                     }
-                }
-                interrupt();
+//                }
+//                interrupt();
             }
         }
 
