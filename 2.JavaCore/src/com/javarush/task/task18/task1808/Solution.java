@@ -25,18 +25,21 @@ public class Solution {
             fis.read(inArray);
 
 
-            for (byte bt : inArray ) { System.out.print(String.format("%02x ", bt)); }
+//            for (byte bt : inArray ) { System.out.print(String.format("%02x ", bt)); }
 
             int center = inArray.length / 2;
-            byte[] firstHalt = new byte[center %2 == 0 ? center : center + 1];
-            byte[] secondHalt = new byte[center];
+            byte[] firstHalt = new byte[inArray.length %2 == 0 ? center : center + 1];
             firstHalt = Arrays.copyOf(inArray, firstHalt.length);
-            secondHalt = Arrays.copyOfRange(inArray, center ,secondHalt.length);
 
+
+            byte[] secondHalt = inArray.length %2 == 0 ? Arrays.copyOfRange(inArray, center,inArray.length) :
+                    Arrays.copyOfRange(inArray, center + 1,inArray.length);
+
+/*
             System.out.println();
             for (byte bt : firstHalt ) { System.out.print(String.format("%02x ", bt)); }
             System.out.println();
-            for (byte bt : secondHalt ) { System.out.print(String.format("%02x ", bt)); }
+            for (byte bt : secondHalt ) { System.out.print(String.format("%02x ", bt)); }*/
 
             fos2.write(firstHalt);
             fos3.write(secondHalt);
