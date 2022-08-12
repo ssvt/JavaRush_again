@@ -1,6 +1,7 @@
 package com.javarush.task.task18.task1828;
 
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,101 +12,113 @@ import java.util.Scanner;
 */
 
 public class Solution {
+//    public static String fileName = "D:\\COMMON\\OUT\\in.txt";
     public static String fileName;
 
     public static void main(String[] args) throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        fileName = scanner.nextLine();
 
         if (args.length == 0) return;
 
-        if (args[0].equals("-u")){
-            StringBuilder productName = new StringBuilder();
-            for (int i = 2; i < args.length - 2;  i++) {
-                productName.append(args[i]);
-                if (i != args.length - 3 ) productName.append(" ");
+        switch (args[0]){
+            case "-u":
+                updateProduct(Integer.parseInt(args[1]), getProductFromArgs(args));
+                break;
+            case "-d":
+                deleteProduct(Integer.parseInt(args[1]));
+                break;
+            default:
+                System.out.println("Команда не распознана");
+        }
+
+    }
+
+
+
+    public static void updateProduct(int id, String product) throws IOException {
+        List<String> listProductFromFile = getListFromFile();
+        for (int i = 0; i < listProductFromFile.size(); i++) {
+            int idProd = Integer.parseInt(listProductFromFile.get(i).substring(0, 8).trim());
+            if (idProd == id){
+                listProductFromFile.set(i, product);
             }
-            double price = Double.parseDouble(args[args.length - 2]);
-            int quantity = Integer.parseInt(args[args.length - 1]);
-
-            char[] newLineChar = new char[50];
-            Arrays.fill(newLineChar, ' ');
-
-            char[] quantityChars = String.valueOf(quantity).toCharArray();
-            char[] priceChars = String.valueOf(price).toCharArray();
-            char[] productCrars = productName.toString().toCharArray();
-
-            System.arraycopy(quantityChars, 0, newLineChar, 46, quantityChars.length);
-            System.arraycopy(priceChars, 0, newLineChar, 38, priceChars.length);
-            System.arraycopy(productCrars, 0, newLineChar, 8, productCrars.length);
-
-
-            int idForUpdate = Integer.parseInt(args[1]);
-            char[] idUpdatesChars = String.valueOf(idForUpdate).toCharArray();
-            System.arraycopy(idUpdatesChars, 0, newLineChar, 0, idUpdatesChars.length);
-            updateProduct(idForUpdate, newLineChar);
-        }else if (args[0].equals("-d")){
-            deleteProduct(Integer.parseInt(args[1]));
-        }
-    }
-
-
-
-    private static void updateProduct(int idUpdate, char[] newLineChar) throws IOException {
-
-        List<String> listLines = readListFromFile();
-
-        for (int i = 0; i < listLines.size(); i++) {
-            String str = listLines.get(i).substring(0, 8).replace(" ", "");
-            int intTd = Integer.parseInt(str);
-            if (intTd == idUpdate) listLines.set(i, new String(newLineChar));
         }
 
-//        listLines.stream().forEach(System.out::println);
-
-        FileWriter fileWriter = new FileWriter(fileName);
-        for (String line : listLines) {
-            fileWriter.write(line);
-            fileWriter.write("\n");
-        }
-
-        fileWriter.close();
+        writelistToFile(listProductFromFile);
 
     }
 
-    private static void deleteProduct(int deleteId) throws IOException {
-        List<String> listLines = readListFromFile();
-        List<String> newListLines = new ArrayList<>();
-
-        for (int i = 0; i < listLines.size(); i++) {
-            String str = listLines.get(i).substring(0, 8).replace(" ", "");
-            int intTd = Integer.parseInt(str);
-            if (intTd != deleteId) newListLines.add(listLines.get(i));
+    private static void deleteProduct(int id) throws IOException {
+        List<String> listLines = getListFromFile();
+        List<String> newList = new ArrayList<>();
+        for (String line: listLines) {
+            int idProd = Integer.parseInt(line.substring(0, 8).trim());
+            if (id != idProd) newList.add(line);
         }
 
-        FileWriter fileWriter = new FileWriter(fileName);
-        for (String line : newListLines) {
-            fileWriter.write(line);
-            fileWriter.write("\n");
-        }
-
-        fileWriter.close();
-
+        writelistToFile(newList);
     }
 
-    private static List<String> readListFromFile () throws IOException {
-        Scanner scanner = new Scanner(System.in);
-//        fileName = scanner.nextLine();
-        fileName = "D:\\COMMON\\OUT\\in.txt";
+    /**
+     * получаем список строк из файла
+     * @return
+     * @throws IOException
+     */
+    public static List<String> getListFromFile () throws IOException {
         FileReader fileReader = new FileReader(fileName);
-
-        Scanner scan = new Scanner(fileReader);
-        List<String> listLines = new ArrayList<>();
-        while (scan.hasNext()) {
-            listLines.add(scan.nextLine());
+        List<String> listProductFromFile = new ArrayList<>();
+        Scanner fileScan = new Scanner(fileReader);
+        while (fileScan.hasNext()) {
+            String readingLine = fileScan.nextLine();
+            listProductFromFile.add(readingLine);
         }
-
         fileReader.close();
-        scan.close();
-        scanner.close();
-        return listLines;
+        fileScan.close();
+        return listProductFromFile;
     }
+
+    /**
+     * метод записывает список в файл
+     * @param list
+     * @throws IOException
+     */
+    public static void writelistToFile (List<String> list) throws IOException {
+        FileWriter fileWriter = new FileWriter(fileName);
+        for (int i = 0; i < list.size(); i++) {
+            fileWriter.write(list.get(i));
+            if (i != list.size() - 1) fileWriter.write("\n");
+        }
+        fileWriter.close();
+    }
+
+    public static String getProductFromArgs(String[] args) {
+
+        int quantity = Integer.parseInt(args[args.length - 1]);
+        char[] quantityChars = String.valueOf(quantity).toCharArray();
+
+        double price = Double.parseDouble(args[args.length - 2]);
+        char[] priceChars = args[args.length - 2].toCharArray();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 2; i < args.length - 2; i++) {
+            stringBuilder.append(args[i]);
+            if (1 != args.length - 3) stringBuilder.append(" ");
+        }
+        String pdoductLine = stringBuilder.length() > 30 ? stringBuilder.substring(0, 30) : stringBuilder.toString();
+        char[] productNameChars = pdoductLine.toCharArray();
+
+        int id = Integer.parseInt(args[1]);
+        char[] idChars = String.valueOf(id).toCharArray();
+
+        char[] productChars = new char[50];
+        Arrays.fill(productChars, ' ');
+        System.arraycopy(idChars, 0, productChars, 0, idChars.length);
+        System.arraycopy(productNameChars, 0, productChars, 8, productNameChars.length);
+        System.arraycopy(priceChars, 0, productChars, 38, priceChars.length);
+        System.arraycopy(quantityChars, 0, productChars, 46, quantityChars.length);
+
+        return new String(productChars);
+    }
+
 }
