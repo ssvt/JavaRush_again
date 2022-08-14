@@ -9,12 +9,57 @@ import java.util.Map;
 
 public class Solution {
     public static Map<String, String> countries = new HashMap<String, String>();
+    static {
+        countries.put("UA", "Ukraine");
+        countries.put("RU", "Russia");
+        countries.put("CA", "Canada");
+    }
 
     public static void main(String[] args) {
+/*        IncomeDataAdapter test = new IncomeDataAdapter(null);
+        test.getPhoneNumber();*/
 
     }
 
-    public static class IncomeDataAdapter {
+    public static class IncomeDataAdapter implements Customer, Contact{
+
+        private IncomeData data;
+
+        public IncomeDataAdapter(IncomeData data) {
+            this.data = data;
+        }
+
+        @Override
+        public String getCompanyName() {
+            return data.getCompany();
+        }
+
+        @Override
+        public String getCountryName() {
+            return countries.get(data.getCountryCode());
+        }
+
+
+        @Override
+        public String getName() {
+            String name = String.format("%s, %s", data.getContactLastName(), data.getContactFirstName());
+            return name;
+        }
+
+        @Override
+        public String getPhoneNumber() {
+            String counryCode = String.valueOf(data.getCountryPhoneCode());
+            String rawPhoneNumber = String.valueOf(data.getPhoneNumber());
+            if (rawPhoneNumber.length() < 10) {
+                rawPhoneNumber = String.format("%010d",Integer.parseInt(rawPhoneNumber));
+            }
+            String finalNum = "+"+counryCode
+                    +"(" + rawPhoneNumber.substring( 0,3 )+ ")"
+                    + rawPhoneNumber.substring( 3,6 )
+                    + "-" + rawPhoneNumber.substring( 6,8)
+                    + "-" + rawPhoneNumber.substring( 8,10);
+            return finalNum;
+        }
     }
 
 
